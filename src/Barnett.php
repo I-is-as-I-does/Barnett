@@ -99,12 +99,27 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         return $this;
     }
 
+    protected function inspectExclusions(&$exclusions)
+    {
+        array_walk($exclusions, function(&$v) {
+            Assistant::reSlash($v);
+            if(!Assistant::containsSubstr($v, $this->zipSourcePath, 0)){
+                $v = $this->zipSourcePath.'/'.$v;
+            }
+            if(is_dir($v)){
+                
+            }
+        });
+    }
+
     public function shredZippedFiles(array $exceptThese = [])
     {
         $this->shredResults = [];
         if ($this->isGreen() && !empty($this->zippedFiles)) {
 
-            if(!empty())
+            if(!empty($exceptThese)){
+                $this->inspectExclusions($exceptThese);
+            }
 
             foreach ($this->zippedFiles as $shredPath) {
                 if (empty($exceptThese) || !in_array($shredPath, $exceptThese)) {

@@ -81,7 +81,7 @@ class Assistant
         return $ext;
     }
 
-    public static function shred($path)
+    public static function shred(string $path)
     {
         if (is_dir($path)) {
             if (!(new \FilesystemIterator($path))->valid()) {
@@ -90,5 +90,21 @@ class Assistant
             return false;
         }
         return @unlink($path);
+    }
+
+    public static function containsSubstr(string $mainStr, string $str, ?int $position = null)
+    {
+        if (!is_int($position)) {
+            return strpos($mainStr, $str) !== false;
+        }
+        $mainStrLen = strlen($mainStr);
+        if ($mainStrLen < strlen($str)) {
+            return false;
+        }
+        $strLen = strlen($str);
+        if (($position + $strLen) > $mainStrLen) {
+            return false;
+        }
+        return strcmp(substr($mainStr, $position, $strLen), $str) === 0;
     }
 }

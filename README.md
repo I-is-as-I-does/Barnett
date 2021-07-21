@@ -122,6 +122,8 @@ $Barnett->zip();
 $Barnett->shredZippedFiles($exceptThese = []);
 ```
 
+
+
 #### Chainable Resetters
 
 ```php
