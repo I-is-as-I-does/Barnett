@@ -112,15 +112,25 @@ Otherwise, your server's file tree could be exposed to the world.
 ```php
 $Barnett->setZipSource($sourceDirPath, 
                        $theseExtOnly = [], 
-                       $excludedPaths = []);
+                       $omitThesePaths = []);
 
 $Barnett->setZipLocation($zipDirPath, 
                          $zipFilename = null, 
                          $addDate = true, 
                          $overwrite = false);
 $Barnett->zip();
-$Barnett->shredZippedFiles($exceptThese = []);
+$Barnett->shredZippedFiles($omitThesePaths = []);
 ```
+
+About `$omitThesePaths`:
+
+- Specified paths can be relative to `$sourceDirPath`.  
+example: `someFolder/someFile.ext`  
+instead of: `Source/Dir/Path/someFolder/someFile.ext`
+
+- To exclude a whole subfolder and its content, only the subfolder path is required.  
+example : `['dontTouchMe/']`  
+instead of: `['dontTouchMe/','dontTouchMe/file1.ext','dontTouchMe/file2.ext']`
 
 
 

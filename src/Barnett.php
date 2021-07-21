@@ -28,7 +28,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
             ->getZipLocation();
     }
 
-    public function setZipSource(string $sourceDirPath, array $theseExtOnly = [], array $excludedPaths = [])
+    public function setZipSource(string $sourceDirPath, array $theseExtOnly = [], array $excludThesePaths = [])
     {
         if ($this->isGreen()) {
             if (!Assistant::affirmDirExistence($sourceDirPath)) {
@@ -44,8 +44,8 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
                 Assistant::normalizeExts($theseExtOnly);
                 $this->conditions['ext'] = $theseExtOnly;
             }
-            if (!empty($excludedPaths)) {
-                $this->conditions['exc'] = $excludedPaths;
+            if (!empty($excludThesePaths)) {
+                $this->conditions['exc'] = $excludThesePaths;
             }
         }
         return $this;
@@ -106,23 +106,20 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
             if(!Assistant::containsSubstr($v, $this->zipSourcePath, 0)){
                 $v = $this->zipSourcePath.'/'.$v;
             }
-            if(is_dir($v)){
-                
-            }
         });
     }
 
-    public function shredZippedFiles(array $exceptThese = [])
+    public function shredZippedFiles(array $omitThesePaths = [])
     {
         $this->shredResults = [];
         if ($this->isGreen() && !empty($this->zippedFiles)) {
 
-            if(!empty($exceptThese)){
-                $this->inspectExclusions($exceptThese);
+            if(!empty($omitThesePaths)){
+                $this->inspectExclusions($omitThesePaths);
             }
 
             foreach ($this->zippedFiles as $shredPath) {
-                if (empty($exceptThese) || !in_array($shredPath, $exceptThese)) {
+                if (empty($omitThesePaths) || !in_array($shredPath, $omitThesePaths)) {
                     if (is_dir($shredPath)) {
 
                     }
@@ -234,7 +231,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
     protected function isExcluded(string $path)
     {
-        return (!empty($this->conditions['exc']) && in_array($path, $this->conditions['exc']));
+        return (!empty($this->conditions['exc']) && in_array($path, $this->conditions['exc']) || );
     }
 
     protected function notGreen()
