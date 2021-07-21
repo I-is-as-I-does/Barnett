@@ -3,14 +3,14 @@
 namespace SSITU\Barnett\Test;
 
 use \SSITU\Barnett\Barnett;
+use \SSITU\Barnett\Assistant;
 
-class Trooper
+class Trooper extends Barnett
 {
 
     protected $sourceDirPath;
     protected $zipDirPath;
     protected $rslt = [];
-    protected $Barnett;
 
     public function __construct(?string $sourceDirPath = null, ?string $zipDirPath = null)
     {
@@ -20,9 +20,10 @@ class Trooper
         if (empty($zipDirPath)) {
             $zipDirPath = __DIR__ . '/zipDest';
         }
+        new parent();
         $this->sourceDirPath = $sourceDirPath;
         $this->zipDirPath = $zipDirPath;
-        $this->Barnett = new Barnett();
+       
     }
 
     public function testALLtheThings()
@@ -32,11 +33,33 @@ class Trooper
 
     public function testChainDelete($deletableSourceDirPath){
 
-       $this->rslt['chain-delete-results'] = $this->Barnett->setZipSource($deletableSourceDirPath)
+       $this->rslt['chain-delete-results'] = $this->setZipSource($deletableSourceDirPath)
                    ->setZipLocation($this->zipDirPath)
                    ->zip()
                    ->shredZippedFiles()
                    ->getShredResults();
+    }
+
+    public function testOmitResolution()
+    {
+        $this->zipSourcePath = 'sourceDirPath';
+        $this->zippedFiles = ['sourceDirPath/file1.ext', 'sourceDirPath/file2.ext', 'sourceDirPath/file3.ext','sourceDirPath/subfolder/subfile.ext', 'sourceDirPath/subfolder/another/last.ext'];
+        $this->zippedFolders = ['sourceDirPath/subfolder', 'sourceDirPath/subfolder/another'];
+        $omitThesePaths = ['file1.truc', 'subfolder/', 'sourceDirPath/file2.ext', 'unknown/stuff'];
+
+        $this->normalizeOmitPaths($omitThesePaths);
+        $this->rslt['normalized-omit-paths'] = $omitThesePaths;
+    
+        $this->rslt['reduced-file-list-to-shred'] = array_uintersect($this->zippedFiles,$omitThesePaths, function($a,$b){
+            if ($a === $b) {
+                return 0;
+            }
+            if (Assistant::containsSubstr($a, $b, 0)) {
+                return 0;
+            }
+            return 1;
+        });
+      $this->resetAll();
     }
 
     public function testZipFast()
@@ -45,12 +68,12 @@ class Trooper
         $zipFilename = null;
         $addDate = true;
         $overwrite = false;
-        $this->rslt['zipfast_defaults'] = $this->Barnett->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $this->rslt['zipfast_defaults'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
 
         $zipFilename = 'bestof';
         $addDate = false;
-        $this->rslt['zipfast_filename_no-date_no-overwrite'] = $this->Barnett->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
-        $this->rslt['zipfast_filename_no-date_no-overwrite-bis'] = $this->Barnett->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $this->rslt['zipfast_filename_no-date_no-overwrite'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $this->rslt['zipfast_filename_no-date_no-overwrite-bis'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
     }
 
     public function dumpResult($html = false)

@@ -2,6 +2,8 @@
 /* This file is part of Barnett | SSITU | (c) 2021 I-is-as-I-does | MIT License */
 namespace SSITU\Barnett;
 
+use \SSITU\Blueprints;
+
 class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
 {
@@ -46,7 +48,8 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
                 $this->conditions['ext'] = $theseExtOnly;
             }
             if (!empty($omitThesePaths)) {
-                $this->conditions['exc'] = array_map([$this,'normalizeOmitPath'], $omitThesePaths);
+                $this->normalizeOmitPaths($omitThesePaths);
+                $this->conditions['exc'] = $omitThesePaths;
             }
         }
         return $this;
@@ -101,31 +104,14 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         return $this;
     }
 
-    protected function normalizeOmitPath($path)
+    protected function normalizeOmitPaths(&$omitThesePaths)
     {
+        array_walk($omitThesePaths, function(&$path){
             Assistant::reSlash($path);
             if (!Assistant::containsSubstr($path, $this->zipSourcePath, 0)) {
                 $path = $this->zipSourcePath . '/' . $path;
             }
-            return $path;
-    }
-
-    public static function test()
-    {
-
-        $zippedFiles = ['sourcedirtpath/file1.truc', 'sourcedirtpath/file2.truc', 'sourcedirtpath/subfolder/filesub.truc', 'sourcedirtpath/subfolder/another/last.ext'];
-        $zippedFolders = ['sourcedirtpath/subfolder', 'sourcedirtpath/subfolder/another'];
-        $omitThesePathsraw = ['file1.truc', 'subfolder/'];
-        $omitThesePaths= ['sourcedirtpath/file1.truc', 'sourcedirtpath/subfolder'];
-    
-        $rslt = array_uintersect($zippedFiles,$omitThesePaths, function($a,$b){
-            if (Assistant::containsSubstr($a, $b, 0)) {
-                return -1;
-            }
-            return 1;
-        });
-        var_dump($rslt);
-
+        });     
     }
 
     public function shredZippedFiles(array $omitThesePaths = [])
@@ -187,7 +173,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
     public function resetAll(bool $localLogsToo = true)
     {
         $this->green = null;
-        if ($logsToo) {
+        if ($localLogsToo) {
             $this->localLogs = [];
         }
         return $this->resetZipSource()
