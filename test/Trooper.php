@@ -50,8 +50,8 @@ class Trooper extends Barnett
         */
 
         $this->setZipSource($this->sourceDirPath)->setZipLocation($this->zipDirPath,null,true,false)->zip();
-        $this->rslt['zippedFiles'] = $this->zippedFiles;
-        $this->rslt['zippedFolders'] = $this->zippedFolders;
+     
+      //  $this->rslt['zippedFolders'] = $this->zippedFolders;
 
         $omitThesePaths = ['Ohio-subfolder/','HandlingChaos.txt',"unknown"];
         $this->normalizeOmitPaths($omitThesePaths);
@@ -72,25 +72,24 @@ class Trooper extends Barnett
                 }
             }
         }*/
-        if(!empty($omitThesePaths) && !empty($this->zippedFiles)){
-            foreach($this->zippedFiles as $file){
-                $search = array_search($file, $omitThesePaths);
-                if($search === false && !in_array(basename($file),$omitThesePaths)){
-                    if(is_dir($file)){
-                        $folderstoDel[] = $file;
-                    } else {
-                        $filesToDel[] = $file;
-                    }
+     
+         $toDelete = $this->zippedFiles;
+         usort($toDelete, function($a, $b){
+            return strlen($a) <=> strlen($b);
+           
+         });
+         $this->rslt['zippedFiles'] = $toDelete;
+ 
+            foreach($toDelete as $k => $file){
+                foreach($omitThesePaths as $path){
+                if(Assistant::containsSubstr($path, $file, 0)){
+                    unset($toDelete[$k]);
                     
-                } else {
-                    unset($omitThesePaths[$search]);
-                    if(empty($omitThesePaths)){
-                        break;
-                    }
                 }
+            }
         }
-    }
   
+        $this->rslt['to-delete-list'] =$toDelete;
         $this->rslt['folder-to-delete-list'] =$folderstoDel;
 
         $this->rslt['files-to-delete-list'] =$filesToDel;
