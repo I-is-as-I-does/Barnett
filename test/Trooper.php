@@ -42,23 +42,59 @@ class Trooper extends Barnett
 
     public function testOmitResolution()
     {
+        /*
         $this->zipSourcePath = 'sourceDirPath';
         $this->zippedFiles = ['sourceDirPath/file1.ext', 'sourceDirPath/file2.ext', 'sourceDirPath/file3.ext','sourceDirPath/subfolder/subfile.ext', 'sourceDirPath/subfolder/another/last.ext'];
         $this->zippedFolders = ['sourceDirPath/subfolder', 'sourceDirPath/subfolder/another'];
-        $omitThesePaths = ['file1.truc', 'subfolder/', 'sourceDirPath/file2.ext', 'unknown/stuff'];
 
+        */
+
+        $this->setZipSource($this->sourceDirPath)->setZipLocation($this->zipDirPath,null,true,false)->zip();
+        $this->rslt['zippedFiles'] = $this->zippedFiles;
+        $this->rslt['zippedFolders'] = $this->zippedFolders;
+
+        $omitThesePaths = ['Ohio-subfolder/','HandlingChaos.txt'];
         $this->normalizeOmitPaths($omitThesePaths);
         $this->rslt['normalized-omit-paths'] = $omitThesePaths;
+
+
+        $folders = $this->zippedFolders;
+        $files = $this->zippedFiles;
+        foreach($omitThesePaths as $path){
+            if(is_dir($path)){
+                
+            }
+            $dkey = array_search($path, $folders);
+            if($dkey !== false){
+                unset($folders[$dkey]);
+                array_walk($files, function(&$itm) use($path){
+                    if (Assistant::containsSubstr($itm, $path, 0)) {
+                        unset($itm);
+                    }
+                });
+            } else {
+                $fkey = array_search($path, $files);
+                if($fkey !== false){
+                    unset($files[$fkey]);
+                }
+            }
+
+        }
+
     
-        $this->rslt['reduced-file-list-to-shred'] = array_uintersect($this->zippedFiles,$omitThesePaths, function($a,$b){
+        $this->rslt['reduced-file-list-to-shred'] =$files;
+        $this->rslt['reduced-folder-list-to-shred'] =$folders;
+        
+        /*array_uintersect($this->zippedFolders,$omitThesePaths, function($a,$b){
             if ($a === $b) {
-                return 0;
+                return -1;
             }
             if (Assistant::containsSubstr($a, $b, 0)) {
+                $this->rslt['contains'][]= ['a'=>$a, 'b'=>$b];
                 return 0;
             }
             return 1;
-        });
+        });*/
       $this->resetAll();
     }
 
