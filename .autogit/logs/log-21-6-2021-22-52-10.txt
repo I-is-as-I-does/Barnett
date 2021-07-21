@@ -1,0 +1,19 @@
+-------------------- Auto-Git Log --------------------
+		Wed Jul 21 2021 22:52:10 GMT+0200 (heure d’été d’Europe centrale)
+------------------------------------------------------
+
+Modified files:
+* test/Trooper.php
+
+
+Created files:
+* .autogit/logs/log-21-6-2021-22-21-53.txt
+* test/zipDest/quotes_2021-07-21_20-48-36.zip
+* test/zipDest/quotes_2021-07-21_20-49-53.zip
+* test/zipDest/quotes_2021-07-21_20-50-20.zip
+
+
+Deleted files:
+
+
+Renamed files:

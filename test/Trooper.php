@@ -53,37 +53,22 @@ class Trooper extends Barnett
         $this->rslt['zippedFiles'] = $this->zippedFiles;
         $this->rslt['zippedFolders'] = $this->zippedFolders;
 
-        $omitThesePaths = ['Ohio-subfolder/','HandlingChaos.txt'];
+        $omitThesePaths = ['Ohio-subfolder/','HandlingChaos.txt',"unknown"];
         $this->normalizeOmitPaths($omitThesePaths);
         $this->rslt['normalized-omit-paths'] = $omitThesePaths;
 
-
-        $folders = $this->zippedFolders;
-        $files = $this->zippedFiles;
+        $toDelete =$this->zippedFiles;
         foreach($omitThesePaths as $path){
-            if(is_dir($path)){
-                
-            }
-            $dkey = array_search($path, $folders);
-            if($dkey !== false){
-                unset($folders[$dkey]);
-                array_walk($files, function(&$itm) use($path){
-                    if (Assistant::containsSubstr($itm, $path, 0)) {
-                        unset($itm);
-                    }
-                });
-            } else {
-                $fkey = array_search($path, $files);
-                if($fkey !== false){
-                    unset($files[$fkey]);
-                }
-            }
-
+            foreach($toDelete as $k=>$file){
+                if (Assistant::containsSubstr($file, $path, 0)) {
+                  unset($toDelete[$k]);
+                 }
+            }           
         }
 
     
-        $this->rslt['reduced-file-list-to-shred'] =$files;
-        $this->rslt['reduced-folder-list-to-shred'] =$folders;
+        $this->rslt['to-delete-list'] =$toDelete;
+
         
         /*array_uintersect($this->zippedFolders,$omitThesePaths, function($a,$b){
             if ($a === $b) {
