@@ -18,7 +18,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
     protected $flag;
 
     protected $zippedFiles = [];
-    protected $zippedDir = [];
+    protected $zippedFolders = [];
     protected $shredResults = [];
 
     public function zipFast(string $sourceDirPath, string $zipDirPath, ?string $zipFilename = null, bool $addDate = true, bool $overwrite = false)
@@ -29,7 +29,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
             ->getZipLocation();
     }
 
-    public function setZipSource(string $sourceDirPath, array $theseExtOnly = [], array $excludThesePaths = [])
+    public function setZipSource(string $sourceDirPath, array $theseExtOnly = [], array $omitThesePaths = [])
     {
         if ($this->isGreen()) {
             if (!Assistant::affirmDirExistence($sourceDirPath)) {
@@ -45,8 +45,8 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
                 Assistant::normalizeExts($theseExtOnly);
                 $this->conditions['ext'] = $theseExtOnly;
             }
-            if (!empty($excludThesePaths)) {
-                $this->conditions['exc'] = $excludThesePaths;
+            if (!empty($omitThesePaths)) {
+                $this->conditions['exc'] = array_map([$this,'normalizeOmitPath'], $omitThesePaths);
             }
         }
         return $this;
@@ -81,7 +81,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
     public function zip()
     {
-        $this->zippedDir = [];
+        $this->zippedFolders = [];
         $this->zippedFiles = [];
         if ($this->isGreen()) {
 
@@ -101,14 +101,31 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         return $this;
     }
 
-    protected function normalizeOmitPaths(&$omitThesePaths)
+    protected function normalizeOmitPath($path)
     {
-        array_walk($omitThesePaths, function(&$v) {
-            Assistant::reSlash($v);
-            if(!Assistant::containsSubstr($v, $this->zipSourcePath, 0)){
-                $v = $this->zipSourcePath.'/'.$v;
+            Assistant::reSlash($path);
+            if (!Assistant::containsSubstr($path, $this->zipSourcePath, 0)) {
+                $path = $this->zipSourcePath . '/' . $path;
             }
+            return $path;
+    }
+
+    public static function test()
+    {
+
+        $zippedFiles = ['sourcedirtpath/file1.truc', 'sourcedirtpath/file2.truc', 'sourcedirtpath/subfolder/filesub.truc', 'sourcedirtpath/subfolder/another/last.ext'];
+        $zippedFolders = ['sourcedirtpath/subfolder', 'sourcedirtpath/subfolder/another'];
+        $omitThesePathsraw = ['file1.truc', 'subfolder/'];
+        $omitThesePaths= ['sourcedirtpath/file1.truc', 'sourcedirtpath/subfolder'];
+    
+        $rslt = array_uintersect($zippedFiles,$omitThesePaths, function($a,$b){
+            if (Assistant::containsSubstr($a, $b, 0)) {
+                return -1;
+            }
+            return 1;
         });
+        var_dump($rslt);
+
     }
 
     public function shredZippedFiles(array $omitThesePaths = [])
@@ -116,7 +133,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         $this->shredResults = [];
         if ($this->isGreen() && !empty($this->zippedFiles)) {
 
-            if(!empty($omitThesePaths)){
+            if (!empty($omitThesePaths)) {
                 $this->normalizeOmitPaths($omitThesePaths);
             }
 
@@ -162,7 +179,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
     public function resetZipLists()
     {
         $this->shredResults = [];
-        $this->zippedDir = [];
+        $this->zippedFolders = [];
         $this->zippedFiles = [];
         return $this;
     }
@@ -216,7 +233,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
             if (is_dir($path)) {
                 $this->addDir($path, $inPath);
-                $this->zippedDir[] = $path;
+                $this->zippedFolders[] = $path;
             } else {
                 $this->addFile($path, $inPath);
                 $this->zippedFiles[] = $path;

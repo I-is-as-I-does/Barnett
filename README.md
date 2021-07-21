@@ -139,7 +139,7 @@ instead of: `['dontTouchMe/','dontTouchMe/file1.ext','dontTouchMe/file2.ext']`
 ```php
 $Barnett->resetZipSource();
 $Barnett->resetZipLocation();
-$Barnett->resetZipLists(); # zippedDir, zippedFiles, and shredResults
+$Barnett->resetZipLists(); # zippedFolders, zippedFiles, and shredResults
 $Barnett->resetAll($localLogsToo = true);
 ```
 
