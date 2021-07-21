@@ -17,7 +17,7 @@ Set archive destination, source directory and **voilà**.
 
 * All necessary checks are performed.
   * Errors will be logged.
-  * Yes, you can plug in a **Psr-3 logger**.
+  * Yes, you can plug in your Psr-3 logger of choice.
   * Or just access in-memory logs.
 
 * An existing archive will not be overwritten.
@@ -25,15 +25,16 @@ Set archive destination, source directory and **voilà**.
   * Zip filename can be handled for you.
   * Addition of a timestamp on request.
 
-* Delete successfully zipped source files.
-  * And get a detailed feedback.
-* Oh, and produce an html download link.
+* Comes with finishing moves.
+  * Can delete successfully zipped source files.
+  * Provide feedback on zipped and shred files. 
+  * Oh, and produce an html download link.
 
 ### Call with Style
 
-Barnett's methods can be chained.  
-Since it extends ZipArchive, you can call native methods too.  
-Easy inheritance: no private thingies.  
+- Barnett's methods can be chained.  
+- Since it extends ZipArchive, you can call native methods too.  
+- No private thingies, so you can extend it too.
 
 ## Install
 
@@ -41,8 +42,10 @@ Easy inheritance: no private thingies.
 composer require ssitu/barnett
 ```
 
-Also require `ssitu/blueprints`:
-`FlexLogsTrait` and `FlexLogsInterface` specifically.  
+Also require `ssitu/blueprints`:  
+- `FlexLogsTrait` and 
+- `FlexLogsInterface` specifically.  
+
 This is a Psr-3 "logger aware" implementation with a fallback.  
 If no use of other SSITU blueprints, you can download just those two files.
 
@@ -51,7 +54,7 @@ If no use of other SSITU blueprints, you can download just those two files.
 ### Init
 
 ```php
-use SSITU\Barnett;
+use SSITU\Barnett\Barnett; # Barnett also has an Assistant.
 require_once 'path/to/autoload.php';
 $Barnett = new Barnett();
 ```
@@ -63,7 +66,7 @@ $Barnett = new Barnett();
 $Barnett->setLogger($somePsr3Logger);
 # alternatively, you can retrieve logs that way:
 $Barnett->getLocalLogs();
-// if no logger set: return all logs history;
+// if no logger set: returns all logs history;
 // else: only last entry
 ```
 
@@ -72,27 +75,11 @@ $Barnett->getLocalLogs();
 Return zip file's path on success.
 
 ```php
-$Barnett->zipFast($sourceDirPath, $zipDirPath, $zipFilename = null, $addDate = true, $overwrite = false);
-```
-
-### À la carte
-
-#### Chainable Actions
-
-```php
-$Barnett->setZipSource($sourceDirPath, $theseExtOnly = [], $excludedPaths = []);
-$Barnett->setZipLocation($zipDirPath, $zipFilename = null, $addDate = true, $overwrite = false);
-$Barnett->zip();
-$Barnett->shredZippedFiles($exceptThese = []);
-```
-
-#### Chainable Resetters
-
-```php
-$Barnett->resetZipSource();
-$Barnett->resetZipLocation();
-$Barnett->resetZipLists(); # ListOfZippedFiles and ShredResults
-$Barnett->resetAll($localLogsToo = true);
+$Barnett->zipFast($sourceDirPath, 
+                  $zipDirPath, 
+                  $zipFilename = null, 
+                  $addDate = true, 
+                  $overwrite = false);
 ```
 
 ### Chaining
@@ -106,15 +93,44 @@ $zipLink = $Barnett->setZipSource($sourceDirPath)
                    ->getDownloadLink('https://example.com/aliasPath/');
 ```
 
-Note: setting an alias path for `getDownloadLink()` is not mandatory, but highly recommended.
+Note: setting an alias path for `getDownloadLink()` is not mandatory, but highly recommended.  
 Otherwise, your server's file tree could be exposed to the world.
+
+### À la carte
+
+#### Chainable Actions
+
+```php
+$Barnett->setZipSource($sourceDirPath, 
+                       $theseExtOnly = [], 
+                       $excludedPaths = []);
+
+$Barnett->setZipLocation($zipDirPath, 
+                         $zipFilename = null, 
+                         $addDate = true, 
+                         $overwrite = false);
+$Barnett->zip();
+$Barnett->shredZippedFiles($exceptThese = []);
+```
+
+#### Chainable Resetters
+
+```php
+$Barnett->resetZipSource();
+$Barnett->resetZipLocation();
+$Barnett->resetZipLists(); # ListOfZippedFiles and ShredResults
+$Barnett->resetAll($localLogsToo = true);
+```
 
 #### Getters
 
 ```php
 $Barnett->isGreen(); # false if an error occured
 
-$Barnett->getDownloadLink($aliasDirPath = null, $aliasFilename = null, $text = 'download');
+$Barnett->getDownloadLink($aliasDirPath = null, # as said before, avoid null
+                          $aliasFilename = null, 
+                          $text = 'download');
+                          
 $Barnett->getZipLocation();
 $Barnett->getListOfZippedFiles();
 $Barnett->getShredResults();
