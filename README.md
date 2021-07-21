@@ -2,6 +2,13 @@
 
 /!\ THIS IS ALPHA. TESTS ARE STILL BEING DONE. DON'T USE.
 
+**Todo**
+- [ ] 
+- [ ] Complete tests
+- [ ] Doc of protected methods
+
+___
+
 A Php zip utility.  
 Makes your life easier.  
 Zips as good as [Barnett Newman](https://www.moma.org/artists/4285)'s.
@@ -87,13 +94,15 @@ $Barnett->zipFast($sourceDirPath,
 Example:
 
 ```php
-$zipLink = $Barnett->setZipSource($sourceDirPath)
-                   ->setZipLocation($zipDirPath)
-                   ->zip()
+$zipLink = $Barnett->setZipSource('some/source/dir/path/', ['txt'])
+                   ->setZipLocation('some/zip/dir/path/')
+                   ->zip() # this won't work if no source / location specified
+                   ->shredZippedFiles(['ButNotThisOne.txt'])
                    ->getDownloadLink('https://example.com/aliasPath/');
 ```
 
-Note: setting an alias path for `getDownloadLink()` is not mandatory, but highly recommended.  
+> **Note**  
+Setting an alias path for `getDownloadLink()` is not mandatory, but highly recommended.  
 Otherwise, your server's file tree could be exposed to the world.
 
 ### À la carte
@@ -130,7 +139,7 @@ $Barnett->isGreen(); # false if an error occured
 $Barnett->getDownloadLink($aliasDirPath = null, # as said before, avoid null
                           $aliasFilename = null, 
                           $text = 'download');
-                          
+
 $Barnett->getZipLocation();
 $Barnett->getListOfZippedFiles();
 $Barnett->getShredResults();
@@ -138,7 +147,11 @@ $Barnett->getShredResults();
 
 ### Assistant's Static Methods
 
+For documentation's sake.
+
 ```php
+use SSITU\Barnett\Assistant;
+
 # return appropriate ZipArchive flag
 Assistant::archiveFlag($overwrite);
 # attempt a recursive mkdir if need to
@@ -155,10 +168,12 @@ Assistant::fileIsNow(&$zipName);
 Assistant::reSlash(&$dirPath, $finalSlash = false);
 # check if path is . or ..
 Assistant::isDotSegment($path);
-# removes dot, set to lower case and jpeg becomes jpg
+# handle extensions list: removes dot, set to lower case and jpeg becomes jpg
 Assistant::normalizeExts(&$extensions);
-# get lower case ext and jpeg becomes jpg
+# read a file's extension, set to lower case and jpeg becomes jpg
 Assistant::extractNormalizedExt($path);
+# resolve file object deletion
+Assistant::shred($path);
 ```
 
 ## Contributing

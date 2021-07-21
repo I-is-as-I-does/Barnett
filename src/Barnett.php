@@ -2,8 +2,6 @@
 /* This file is part of Barnett | SSITU | (c) 2021 I-is-as-I-does | MIT License */
 namespace SSITU\Barnett;
 
-use \SSITU\Blueprints;
-
 class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
 {
@@ -106,12 +104,17 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         $this->shredResults = [];
         if ($this->isGreen() && !empty($this->zippedFiles)) {
 
+            if(!empty())
+
             foreach ($this->zippedFiles as $shredPath) {
                 if (empty($exceptThese) || !in_array($shredPath, $exceptThese)) {
-                    if(is_dir())
+                    if (is_dir($shredPath)) {
+
+                    }
                     $this->shredResults[$shredPath] = @unlink($shredPath);
                 }
             }
+
             if (in_array(false, $this->shredResults)) {
                 $this->log('error', 'shredding-failed', array_filter($this->shredResults, function ($itm) {return empty($itm);}));
                 return $this->notGreen();
