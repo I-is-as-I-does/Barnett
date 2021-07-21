@@ -2,36 +2,38 @@
 
 /!\ THIS IS ALPHA. TESTS ARE STILL BEING DONE. DON'T USE.
 
-A Php zip utility.
-Makes your life easier.
+A Php zip utility.  
+Makes your life easier.  
 Zips as good as [Barnett Newman](https://www.moma.org/artists/4285)'s.
 
 ## Overview
 
-Set archive destination, source directory and voilà.
+Set archive destination, source directory and **voilà**.
 
-- Yes, source directory will be crawled recursively.
-- Neat archive tree, mirroring source's one.
-- Yes, you can specify files to exclude.
-- Or target only specific file types.
+* Yes, source directory will be crawled recursively.
+  * Neat archive tree, mirroring source's one.
+  * With the option to set a list of excluded files.
+  * Can also target only some file extensions.
 
-- All necessary checks are performed.
-- Errors will be logged.
-- Yes, you can plug in a Psr-3 logger.
-- Or just access in-memory logs.
+* All necessary checks are performed.
+  * Errors will be logged.
+  * Yes, you can plug in a **Psr-3 logger**.
+  * Or just access in-memory logs.
 
-- An existing archive will not be overwritten.
-- Well, unless specified.
-- Zip filename can be handled for you.
+* An existing archive will not be overwritten.
+  * Well, unless specified.
+  * Zip filename can be handled for you.
+  * Addition of a timestamp on request.
 
-- You can also ask Barnett to delete successfully zipped source files.
-- Oh, and produce an html download link.
+* Delete successfully zipped source files.
+  * And get a detailed feedback.
+* Oh, and produce an html download link.
 
 ### Call with Style
 
-- Barnett's methods can be chained.
-- Since it extends ZipArchive, you can call native methods too.
-- Easy inheritance: no private thingies.
+Barnett's methods can be chained.  
+Since it extends ZipArchive, you can call native methods too.  
+Easy inheritance: no private thingies.  
 
 ## Install
 
@@ -40,8 +42,8 @@ composer require ssitu/barnett
 ```
 
 Also require `ssitu/blueprints`:
-`FlexLogsTrait` and `FlexLogsInterface` specifically.
-This is a Psr-3 "logger aware" implementation with a fallback.
+`FlexLogsTrait` and `FlexLogsInterface` specifically.  
+This is a Psr-3 "logger aware" implementation with a fallback.  
 If no use of other SSITU blueprints, you can download just those two files.
 
 ## How to
@@ -157,4 +159,4 @@ This project is under the MIT License; cf. [LICENSE](LICENSE) for details.
 This is the _plasmic zip_.
 Now go do something else.
 
-![Barnett Newman at Betty Parsons gallery | photo by Hans Namuth](Barnett-Newman-at-Betty-Parsons-gallery-photo-by-Hans-Namuth.jpg)
+![Barnett Newman at Betty Parsons gallery | photo by Hans Namuth](Barnett-Newman-at-Betty-Parsons-gallery-photo-by-Hans-Namuth.png)
