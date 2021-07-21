@@ -1,5 +1,7 @@
 # Barnett
 
+/!\ THIS IS ALPHA. TESTS ARE STILL BEING DONE. DON'T USE.
+
 A Php zip utility.
 Makes your life easier.
 Zips as good as [Barnett Newman](https://www.moma.org/artists/4285)'s.
