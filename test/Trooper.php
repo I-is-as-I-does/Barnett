@@ -49,18 +49,41 @@ class Trooper extends Barnett
 
         */
 
+
         $this->setZipSource($this->sourceDirPath)->setZipLocation($this->zipDirPath,null,true,false)->zip();
      
-      //  $this->rslt['zippedFolders'] = $this->zippedFolders;
-
-        $omitThesePaths = ['Ohio-subfolder/','HandlingChaos.txt',"unknown"];
+    // $this->rslt['zippedFolders'] = $this->zippedFolders;
+  //   $this->rslt['zippedFiles'] = $this->zippedFiles;
+        $omitThesePaths = ['Ohio-subfolder/Nested','HandlingChaos.txt',"unknown"];
         $this->normalizeOmitPaths($omitThesePaths);
         $this->rslt['normalized-omit-paths'] = $omitThesePaths;
 
+
+     $folderstoDel = $this->zippedFolders;
+        $filesToDel = $this->zippedFiles;
+    
+            usort($filesToDel, function($a, $b){
+                return strlen($a) <=> strlen($b);         
+             });
+   
+
+        $this->rslt['sorted-zippedFiles'] = $filesToDel;
+
+           foreach($filesToDel as $k => $file){
+               foreach($omitThesePaths as $path){
+               if(!Assistant::containsSubstr($file, $path, 0)){
+                  $todDelete[]=      
+               }
+           }
+        }
+        $this->rslt['to-delete'] = $filesToDel;
+     
+
         $folderstoDel = [];
         $filesToDel = [];
-        /*if(!empty($this->zippedFolders)){
-            foreach($this->zippedFolders as $folder){
+        if(!empty($this->zippedFolders)){
+            $folderstoDel = $this->zippedFolders;
+            foreach($folderstoDel as $folder){
                 $search = array_search($folder, $omitThesePaths);
                 if($search === false){
                     $folderstoDel[] = $folder;
@@ -71,12 +94,32 @@ class Trooper extends Barnett
                     }
                 }
             }
-        }*/
+        }
+        if(!empty($omitThesePaths) && !empty($this->zippedFiles)){
+            foreach($this->zippedFiles as $file){
+                $search = array_search($file, $omitThesePaths);
+                if($search === false){
+                    if(in_array(basename($file),$folderstoDel)){
+                        $filesToDel[] = $file;
+                    }               
+                } else {
+                    unset($omitThesePaths[$search]);
+                    if(empty($omitThesePaths)){
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        $this->rslt['files-to-delete-list'] =$filesToDel;
+        $this->rslt['folder-to-delete-list'] =$folderstoDel;
+
+        /*
      
          $toDelete = $this->zippedFiles;
          usort($toDelete, function($a, $b){
-            return strlen($a) <=> strlen($b);
-           
+            return strlen($a) <=> strlen($b);         
          });
          $this->rslt['zippedFiles'] = $toDelete;
  
@@ -88,12 +131,11 @@ class Trooper extends Barnett
                 }
             }
         }
-  
-        $this->rslt['to-delete-list'] =$toDelete;
-        $this->rslt['folder-to-delete-list'] =$folderstoDel;
-
+  */
+      
+/*
         $this->rslt['files-to-delete-list'] =$filesToDel;
-        /*array_uintersect($this->zippedFolders,$omitThesePaths, function($a,$b){
+        array_uintersect($this->zippedFolders,$omitThesePaths, function($a,$b){
             if ($a === $b) {
                 return -1;
             }
