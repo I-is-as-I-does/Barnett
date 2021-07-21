@@ -1,0 +1,17 @@
+-------------------- Auto-Git Log --------------------
+		Wed Jul 21 2021 20:50:58 GMT+0200 (heure d’été d’Europe centrale)
+------------------------------------------------------
+
+Modified files:
+* README.md
+* src/Barnett.php
+
+
+Created files:
+* .autogit/logs/log-21-6-2021-20-20-41.txt
+
+
+Deleted files:
+
+
+Renamed files:

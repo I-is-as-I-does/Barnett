@@ -18,6 +18,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
     protected $flag;
 
     protected $zippedFiles = [];
+    protected $zippedDir = [];
     protected $shredResults = [];
 
     public function zipFast(string $sourceDirPath, string $zipDirPath, ?string $zipFilename = null, bool $addDate = true, bool $overwrite = false)
@@ -80,6 +81,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
     public function zip()
     {
+        $this->zippedDir = [];
         $this->zippedFiles = [];
         if ($this->isGreen()) {
 
@@ -99,9 +101,9 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         return $this;
     }
 
-    protected function inspectExclusions(&$exclusions)
+    protected function normalizeOmitPaths(&$omitThesePaths)
     {
-        array_walk($exclusions, function(&$v) {
+        array_walk($omitThesePaths, function(&$v) {
             Assistant::reSlash($v);
             if(!Assistant::containsSubstr($v, $this->zipSourcePath, 0)){
                 $v = $this->zipSourcePath.'/'.$v;
@@ -115,14 +117,11 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         if ($this->isGreen() && !empty($this->zippedFiles)) {
 
             if(!empty($omitThesePaths)){
-                $this->inspectExclusions($omitThesePaths);
+                $this->normalizeOmitPaths($omitThesePaths);
             }
 
             foreach ($this->zippedFiles as $shredPath) {
                 if (empty($omitThesePaths) || !in_array($shredPath, $omitThesePaths)) {
-                    if (is_dir($shredPath)) {
-
-                    }
                     $this->shredResults[$shredPath] = @unlink($shredPath);
                 }
             }
@@ -163,6 +162,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
     public function resetZipLists()
     {
         $this->shredResults = [];
+        $this->zippedDir = [];
         $this->zippedFiles = [];
         return $this;
     }
@@ -208,19 +208,19 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
             }
 
             $path = $sourcePath . '/' . $file;
-            if ($this->isExcluded($path)) {
+            if ($this->isExcluded($path) || (!is_dir($path) && !$this->isOfValidType($file))) {
                 continue;
             }
 
-            $job = 'addFile';
+            $inPath = $sourceName . '/' . $file;
+
             if (is_dir($path)) {
-                $job = 'addDir';
-            } else if (!$this->isOfValidType($file)) {
-                continue;
+                $this->addDir($path, $inPath);
+                $this->zippedDir[] = $path;
+            } else {
+                $this->addFile($path, $inPath);
+                $this->zippedFiles[] = $path;
             }
-
-            $this->$job($path, $sourceName . '/' . $file);
-            $this->zippedFiles[] = $path;
         }
     }
 
@@ -231,7 +231,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
     protected function isExcluded(string $path)
     {
-        return (!empty($this->conditions['exc']) && in_array($path, $this->conditions['exc']) || );
+        return (!empty($this->conditions['exc']) && in_array($path, $this->conditions['exc']));
     }
 
     protected function notGreen()
