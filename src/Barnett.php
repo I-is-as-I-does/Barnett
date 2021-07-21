@@ -219,7 +219,8 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
             if (is_dir($path)) {
                 $this->addDir($path, $inPath);
-                $this->zippedFolders[] = $path;
+                //$this->zippedFolders[] = $path;
+                $this->zippedFiles[] = $path;
             } else {
                 $this->addFile($path, $inPath);
                 $this->zippedFiles[] = $path;

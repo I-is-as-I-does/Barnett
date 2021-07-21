@@ -59,28 +59,41 @@ class Trooper extends Barnett
 
         $folderstoDel = [];
         $filesToDel = [];
-        if(!empty($this->zippedFolders){
+        /*if(!empty($this->zippedFolders)){
             foreach($this->zippedFolders as $folder){
                 $search = array_search($folder, $omitThesePaths);
-                if(!in_array($folder, $omitThesePaths)){
+                if($search === false){
                     $folderstoDel[] = $folder;
                 } else {
-                    unset()
+                    unset($omitThesePaths[$search]);
+                    if(empty($omitThesePaths)){
+                        break;
+                    }
                 }
             }
+        }*/
+        if(!empty($omitThesePaths) && !empty($this->zippedFiles)){
+            foreach($this->zippedFiles as $file){
+                $search = array_search($file, $omitThesePaths);
+                if($search === false && !in_array(basename($file),$omitThesePaths)){
+                    if(is_dir($file)){
+                        $folderstoDel[] = $file;
+                    } else {
+                        $filesToDel[] = $file;
+                    }
+                    
+                } else {
+                    unset($omitThesePaths[$search]);
+                    if(empty($omitThesePaths)){
+                        break;
+                    }
+                }
         }
-        foreach($omitThesePaths as $path){
-            foreach($toDelete as $k=>$file){
-                if (Assistant::containsSubstr($file, $path, 0)) {
-                  unset($toDelete[$k]);
-                 }
-            }           
-        }
+    }
+  
+        $this->rslt['folder-to-delete-list'] =$folderstoDel;
 
-    
-        $this->rslt['to-delete-list'] =$toDelete;
-
-        
+        $this->rslt['files-to-delete-list'] =$filesToDel;
         /*array_uintersect($this->zippedFolders,$omitThesePaths, function($a,$b){
             if ($a === $b) {
                 return -1;
