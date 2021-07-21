@@ -1,0 +1,6 @@
+*.code-workspace
+vendor/
+composer.lock
+.env
+env/*
+.fridge/*

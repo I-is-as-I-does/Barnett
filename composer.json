@@ -1,0 +1,30 @@
+{
+  "name": "ssitu/barnett",
+  "description": "A one file wrap of php ZIP extension, for common purposes. Zip like a Barnett Newman.",
+  "type": "library",
+  "keywords": [
+    "php",
+    "zip",
+    "recursive",
+    "util"
+  ],
+  "homepage": "https://github.com/I-is-as-I-does/Barnett",
+  "license": "MIT",
+  "readme": "README.md",
+  "authors": [
+    {
+      "name": "I-is-as-I-does",
+      "email": "66915011+I-is-as-I-does@users.noreply.github.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "ssitu/blueprints": "^0.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "SSITU\\Barnett\\Test\\":"test",
+      "SSITU\\Barnett\\": "src"
+    }
+  }
+}
