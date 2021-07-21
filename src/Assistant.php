@@ -94,6 +94,9 @@ class Assistant
 
     public static function containsSubstr(string $mainStr, string $str, ?int $position = null)
     {
+        if($str == $mainStr){
+            return true;
+        }
         if (!is_int($position)) {
             return strpos($mainStr, $str) !== false;
         }

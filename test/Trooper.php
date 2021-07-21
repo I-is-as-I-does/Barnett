@@ -57,7 +57,18 @@ class Trooper extends Barnett
         $this->normalizeOmitPaths($omitThesePaths);
         $this->rslt['normalized-omit-paths'] = $omitThesePaths;
 
-        $toDelete =$this->zippedFiles;
+        $folderstoDel = [];
+        $filesToDel = [];
+        if(!empty($this->zippedFolders){
+            foreach($this->zippedFolders as $folder){
+                $search = array_search($folder, $omitThesePaths);
+                if(!in_array($folder, $omitThesePaths)){
+                    $folderstoDel[] = $folder;
+                } else {
+                    unset()
+                }
+            }
+        }
         foreach($omitThesePaths as $path){
             foreach($toDelete as $k=>$file){
                 if (Assistant::containsSubstr($file, $path, 0)) {
