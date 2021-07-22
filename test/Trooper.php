@@ -2,8 +2,8 @@
 
 namespace SSITU\Test\Barnett;
 
-use \SSITU\Barnett\Barnett;
 use \SSITU\Barnett\Assistant;
+use \SSITU\Barnett\Barnett;
 
 class Trooper extends Barnett
 {
@@ -23,7 +23,7 @@ class Trooper extends Barnett
         new parent();
         $this->sourceDirPath = $sourceDirPath;
         $this->zipDirPath = $zipDirPath;
-       
+
     }
 
     public function testALLtheThings()
@@ -31,131 +31,16 @@ class Trooper extends Barnett
         $this->testZipFast();
     }
 
-    public function testChainDelete($deletableSourceDirPath){
-
-       $this->rslt['chain-delete-results'] = $this->setZipSource($deletableSourceDirPath)
-                   ->setZipLocation($this->zipDirPath)
-                   ->zip()
-                   ->shredZippedFiles()
-                   ->getShredResults();
-    }
-
-    public function testOmitResolution()
+    public function testChainDelete($deletableSourceDirPath)
     {
-        /*
-        $this->zipSourcePath = 'sourceDirPath';
-        $this->zippedFiles = ['sourceDirPath/file1.ext', 'sourceDirPath/file2.ext', 'sourceDirPath/file3.ext','sourceDirPath/subfolder/subfile.ext', 'sourceDirPath/subfolder/another/last.ext'];
-        $this->zippedFolders = ['sourceDirPath/subfolder', 'sourceDirPath/subfolder/another'];
 
-        */
-
-
-        $this->setZipSource($this->sourceDirPath)->setZipLocation($this->zipDirPath,null,false,true)->zip();
-     
-    // $this->rslt['zippedFolders'] = $this->zippedFolders;
-  //   $this->rslt['zippedFiles'] = $this->zippedFiles;
-        $omitThesePaths = ['Ohio-subfolder/Nested','HandlingChaos.txt',"unknown"];
-        $this->normalizeOmitPaths($omitThesePaths);
-        $this->rslt['normalized-omit-paths'] = $omitThesePaths;
-
-
-   //  $folderstoDel = $this->zippedFolders;
-        $filesToDel = [];
-    
-            usort($this->zippedFiles, function($a, $b){
-                return strlen($a) <=> strlen($b);         
-             });
-   
-
-        $this->rslt['sorted-zippedFiles'] = $this->zippedFiles;
-
-           foreach($this->zippedFiles as $k => $file){
-            
-               if(!empty($omitThesePaths)){
-                $search = array_search($file, $omitThesePaths);
-                if($search !== false){
-                    unset($omitThesePaths[$search]);
-                    continue;
-                }
-               }
-            if(!empty($filesToDel) && in_array(basename($file),$filesToDel)){
-                $filesToDel[] = $file;
-            }
-           }
-        
-        $this->rslt['to-delete'] = $filesToDel;
-     
-/*
-        $folderstoDel = [];
-        $filesToDel = [];
-        if(!empty($this->zippedFolders)){
-            foreach($this->zippedFolders as $folder){
-                $search = array_search($folder, $omitThesePaths);
-                if($search !== false){
-                    unset($omitThesePaths[$search]);
-                    if(empty($omitThesePaths)){
-                        break;
-                    }
-                }
-                if($search === false){
-                    $folderstoDel[] = $folder;
-                } else {
-                   
-                }
-            }
-        }
-        if(!empty($omitThesePaths) && !empty($this->zippedFiles)){
-            foreach($this->zippedFiles as $file){
-                $search = array_search($file, $omitThesePaths);
-                if($search === false){
-                    if(in_array(basename($file),$folderstoDel)){
-                        $filesToDel[] = $file;
-                    }               
-                } else {
-                    unset($omitThesePaths[$search]);
-                    if(empty($omitThesePaths)){
-                        break;
-                    }
-                }
-            }
-
-        }
-
-        $this->rslt['files-to-delete-list'] =$filesToDel;
-        $this->rslt['folder-to-delete-list'] =$folderstoDel;
-
-        /*
-     
-         $toDelete = $this->zippedFiles;
-         usort($toDelete, function($a, $b){
-            return strlen($a) <=> strlen($b);         
-         });
-         $this->rslt['zippedFiles'] = $toDelete;
- 
-            foreach($toDelete as $k => $file){
-                foreach($omitThesePaths as $path){
-                if(Assistant::containsSubstr($path, $file, 0)){
-                    unset($toDelete[$k]);
-                    
-                }
-            }
-        }
-  */
-      
-/*
-        $this->rslt['files-to-delete-list'] =$filesToDel;
-        array_uintersect($this->zippedFolders,$omitThesePaths, function($a,$b){
-            if ($a === $b) {
-                return -1;
-            }
-            if (Assistant::containsSubstr($a, $b, 0)) {
-                $this->rslt['contains'][]= ['a'=>$a, 'b'=>$b];
-                return 0;
-            }
-            return 1;
-        });*/
-      $this->resetAll();
+        $this->rslt['chain-delete-results'] = $this->setZipSource($deletableSourceDirPath)
+            ->setZipLocation($this->zipDirPath)
+            ->zip()
+            ->shredZippedFiles()
+            ->getShredResults();
     }
+
 
     public function testZipFast()
     {
@@ -175,8 +60,8 @@ class Trooper extends Barnett
     {
 
         $rslt = $this->getJsonRslt();
-        if($html){
-            $rslt = '<pre>'.$rslt.'</pre>';
+        if ($html) {
+            $rslt = '<pre>' . $rslt . '</pre>';
         }
         echo $rslt;
     }
