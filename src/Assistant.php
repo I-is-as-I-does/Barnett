@@ -92,22 +92,4 @@ class Assistant
         return @unlink($path);
     }
 
-    public static function containsSubstr(string $mainStr, string $str, ?int $position = null)
-    {
-        if($str == $mainStr){
-            return true;
-        }
-        if (!is_int($position)) {
-            return strpos($mainStr, $str) !== false;
-        }
-        $mainStrLen = strlen($mainStr);
-        if ($mainStrLen < strlen($str)) {
-            return false;
-        }
-        $strLen = strlen($str);
-        if (($position + $strLen) > $mainStrLen) {
-            return false;
-        }
-        return strcmp(substr($mainStr, $position, $strLen), $str) === 0;
-    }
 }

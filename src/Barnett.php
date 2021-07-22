@@ -20,7 +20,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
     protected $flag;
 
     protected $zippedFiles = [];
-    protected $shredResults = [];
+    protected $shredList = [];
 
     public function zipFast(string $sourceDirPath, string $zipDirPath, ?string $zipFilename = null, bool $addDate = true, bool $overwrite = false)
     {
@@ -102,48 +102,27 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         return $this;
     }
 
-    protected function normalizeOmitPaths(&$omitThesePaths)
+    public function shredZippedFiles(array $omitThesePaths = [], bool $mockMode = false)
     {
-
-        array_walk($omitThesePaths, function(&$path){
-            Assistant::reSlash($path);
-            if (!Assistant::containsSubstr($path, $this->zipSourcePath, 0)) {
-                $path = $this->zipSourcePath . '/' . $path;
-            }
-            
-        }); 
-    }
-
-    protected function omitFile(string $shredPath, array $omitThesePaths)
-    {
-        if(in_array($shredPath, $omitThesePaths) || in_array(dirname($shredPath),$omitThesePaths)){
-            return true;
-        }
-        foreach($omitThesePaths as $omitPath)  {                  
-            if (Assistant::containsSubstr($omitPath, $shredPath, 0)) {
-               return true;
-            }
-    }
-    return false;
-    }
-
-    public function shredZippedFiles(array $omitThesePaths = [])
-    {
-        $this->shredResults = [];
+        $this->shredList = [];
         if ($this->isGreen() && !empty($this->zippedFiles)) {
-            
+
             if (!empty($omitThesePaths)) {
                 $this->normalizeOmitPaths($omitThesePaths);
             }
 
             foreach ($this->zippedFiles as $shredPath) {
-               if(empty($omitThesePaths) || !$this->omitFile($shredPath, $omitThesePaths)){
-                $this->shredResults[$shredPath] = Assistant::shred($shredPath);
-               }
+                if (empty($omitThesePaths) || !$this->omitFile($shredPath, $omitThesePaths)) {
+                    $rslt = true;
+                    if (!$mockMode) {
+                        $rslt = Assistant::shred($shredPath);
+                    }
+                    $this->shredList[$shredPath] = $rslt;
+                }
             }
 
-            if (in_array(false, $this->shredResults)) {
-                $this->log('error', 'shredding-failed', array_filter($this->shredResults, function ($itm) {return empty($itm);}));
+            if (in_array(false, $this->shredList)) {
+                $this->log('error', 'shredding-failed', array_filter($this->shredList, function ($itm) {return empty($itm);}));
                 return $this->notGreen();
             }
         }
@@ -177,7 +156,7 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
     public function resetZipLists()
     {
-        $this->shredResults = [];
+        $this->shredList = [];
         $this->zippedFiles = [];
         return $this;
     }
@@ -203,14 +182,14 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
         return $this->zipLocation;
     }
 
-    public function getListOfZippedFiles()
+    public function getZippedFilesList()
     {
         return $this->zippedFiles;
     }
 
-    public function getShredResults()
+    public function getShredList()
     {
-        return $this->shredResults;
+        return $this->shredList;
     }
 
     protected function addDir(string $sourcePath, string $sourceName)
@@ -231,12 +210,47 @@ class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
 
             if (is_dir($path)) {
                 $this->addDir($path, $inPath);
-              $this->zippedFiles[] = $path;
+                $this->zippedFiles[] = $path;
             } else {
                 $this->addFile($path, $inPath);
                 array_unshift($this->zippedFiles, $path);
             }
         }
+    }
+
+    protected function normalizeOmitPaths(&$omitThesePaths)
+    {
+        foreach($omitThesePaths as &$path){
+            Assistant::reSlash($path);  
+            if (strpos($path, $this->zipSourcePath) !== 0) {
+                $namePos = strpos($path, $this->zipSourceName);
+                if($namePos !== false){
+                    $path = substr($path,$namePos+mb_strlen($this->zipSourceName)+1);
+                }
+                $path = $this->zipSourcePath . '/' . $path;
+            }
+            if(!file_exists($path)) {
+                $this->log('error','omit-path-not-found', $path);
+                $this->green = false;
+                break;
+            }           
+        }
+    }
+
+    protected function omitFile(string $shredPath, array $omitThesePaths)
+    {
+        if (in_array($shredPath, $omitThesePaths)) {
+            return true;
+        }
+        $parent = dirname($shredPath);
+        while ($parent != $this->zipSourcePath && strlen($parent) > 0) {
+            if (in_array($parent, $omitThesePaths)) {
+                return true;
+            }
+            $parent = dirname($parent);
+        }
+
+        return false;
     }
 
     protected function isOfValidType(string $file)

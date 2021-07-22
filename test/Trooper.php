@@ -1,4 +1,9 @@
 <?php
+/* This file is part of Barnett | SSITU | (c) 2021 I-is-as-I-does | MIT License */
+
+/* WORK IN PROGRESS */
+
+//@todo next : test with targeted extensions
 
 namespace SSITU\Test\Barnett;
 
@@ -26,21 +31,59 @@ class Trooper extends Barnett
 
     }
 
-    public function testALLtheThings()
+    public function testALLtheThings(bool $htmlDump = false)
     {
         $this->testZipFast();
+        $this->testNormalizeOmitPaths();
+        $this->testNormalizeOmitPaths(true);
+        $this->testChainDelete();
+        $this->testChainDelete(null, ['Ohio-subfolder']);
+        $this->testChainDelete(null, ['Ohio-subfolder', 'quotes/AutomaticMove.txt']);
+        $this->dumpResult($htmlDump);
     }
 
-    public function testChainDelete($deletableSourceDirPath)
+    public function testNormalizeOmitPaths(bool $addUnknownPath = false)
     {
 
-        $this->rslt['chain-delete-results'] = $this->setZipSource($deletableSourceDirPath)
-            ->setZipLocation($this->zipDirPath)
-            ->zip()
-            ->shredZippedFiles()
-            ->getShredResults();
+        $this->setZipSource($this->sourceDirPath);
+        $omitThesePaths = [
+            "Ohio-subfolder\\",
+            "lib/Barnett\\test\\quotes\\AutomaticMove.txt",
+            "quotes/HandlingChaos.txt",
+            "test/quotes/HandlingChaos.txt",
+            "Ohio-subfolder/Date.txt",
+        ];
+        if ($addUnknownPath) {
+            $omitThesePaths[] = "quotes/quotes";
+        }
+
+        $rslt['given-omit-paths'] = $omitThesePaths;
+        $this->normalizeOmitPaths($omitThesePaths);
+        $rslt['normalized-omit-paths'] = $omitThesePaths;
+        $this->rslt('testNormalizeOmitPaths', $rslt);
+
     }
 
+    public function testChainDelete(?string $deletableSourceDirPath = null, array $omitThesePaths = [], bool $mockMode = true)
+    {
+        if (is_null($deletableSourceDirPath)) {
+            if ($mockMode) {
+                $deletableSourceDirPath = __DIR__ . '/quotes';
+            } else {
+                $this->rslt('testChainDelete', ['Trooper-message' => 'Please set a deletable source dir path OR set mock mode to true.']);
+                return;
+            }
+        }
+
+        $rslt['omit-paths'] = $omitThesePaths;
+        $rslt['zipped-files'] = $this->setZipSource($deletableSourceDirPath)
+            ->setZipLocation($this->zipDirPath)
+            ->zip()
+            ->shredZippedFiles($omitThesePaths, $mockMode)
+            ->getZippedFilesList();
+        $rslt['results'] = $this->getShredList();
+        $this->rslt('testChainDelete', $rslt);
+    }
 
     public function testZipFast()
     {
@@ -48,15 +91,16 @@ class Trooper extends Barnett
         $zipFilename = null;
         $addDate = true;
         $overwrite = false;
-        $this->rslt['zipfast_defaults'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $rslt['defaults'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
 
         $zipFilename = 'bestof';
         $addDate = false;
-        $this->rslt['zipfast_filename_no-date_no-overwrite'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
-        $this->rslt['zipfast_filename_no-date_no-overwrite-bis'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $rslt['filename_no-date_no-overwrite'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $rslt['filename_no-date_no-overwrite-bis'] = $this->zipFast($this->sourceDirPath, $this->zipDirPath, $zipFilename, $addDate, $overwrite);
+        $this->rslt('testZipFast', $rslt);
     }
 
-    public function dumpResult($html = false)
+    public function dumpResult(bool $html = false)
     {
 
         $rslt = $this->getJsonRslt();
@@ -68,6 +112,7 @@ class Trooper extends Barnett
 
     public function getJsonRslt()
     {
+        $this->rslt['logs'] = $this->getLocalLogs();
         return json_encode($this->rslt, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
 
     }
@@ -82,4 +127,18 @@ class Trooper extends Barnett
         }
     }
 
+    protected function calcRsltK(string $label)
+    {
+        $it = 1;
+        while (array_key_exists($label . '-' . $it, $this->rslt)) {
+            $it++;
+        }
+        return $label . '-' . $it;
+    }
+
+    protected function rslt(string $label, mixed $data)
+    {
+        $rk = $this->calcRsltK($label);
+        $this->rslt[$rk] = $data;
+    }
 }

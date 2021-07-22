@@ -3,7 +3,6 @@
 /!\ THIS IS ALPHA. TESTS ARE STILL BEING DONE. DON'T USE.
 
 **Todo**
-- [ ] 
 - [ ] Complete tests
 - [ ] Doc of protected methods
 
@@ -119,7 +118,8 @@ $Barnett->setZipLocation($zipDirPath,
                          $addDate = true, 
                          $overwrite = false);
 $Barnett->zip();
-$Barnett->shredZippedFiles($omitThesePaths = []);
+$Barnett->shredZippedFiles($omitThesePaths = []), 
+                           $mockMode = false; # will only list files to delete
 ```
 
 About `$omitThesePaths`:
@@ -139,7 +139,7 @@ instead of: `['dontTouchMe/','dontTouchMe/file1.ext','dontTouchMe/file2.ext']`
 ```php
 $Barnett->resetZipSource();
 $Barnett->resetZipLocation();
-$Barnett->resetZipLists(); # zippedFolders, zippedFiles, and shredResults
+$Barnett->resetZipLists(); # zippedFiles and shredResults
 $Barnett->resetAll($localLogsToo = true);
 ```
 
@@ -153,8 +153,8 @@ $Barnett->getDownloadLink($aliasDirPath = null, # as said before, avoid null
                           $text = 'download');
 
 $Barnett->getZipLocation();
-$Barnett->getListOfZippedFiles();
-$Barnett->getShredResults();
+$Barnett->getZippedFilesList();
+$Barnett->getShredList();
 ```
 
 ### Assistant's Static Methods
