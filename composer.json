@@ -1,6 +1,6 @@
 {
   "name": "ssitu/barnett",
-  "description": "A one file wrap of php ZIP extension, for common purposes. Zip like a Barnett Newman.",
+  "description": "A Php zip utility. Zips as good as Barnett Newman's.",
   "type": "library",
   "keywords": [
     "php",
@@ -19,7 +19,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "ssitu/blueprints": "^0.9"
+    "ssitu/blueprints": "^0.2"
   },
   "autoload": {
     "psr-4": {
