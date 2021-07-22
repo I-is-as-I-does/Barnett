@@ -23,7 +23,7 @@
   },
   "autoload": {
     "psr-4": {
-      "SSITU\\Test\\Barnett":"test",
+      "SSITU\\Test\\Barnett\\":"test",
       "SSITU\\Barnett\\": "src"
     }
   }
