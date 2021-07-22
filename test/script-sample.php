@@ -1,6 +1,7 @@
 <?php
 
-use SSITU\Barnett\Test\Trooper;
+use SSITU\Test\Barnett\Trooper;
+
 
 require_once dirname(__DIR__,3).'/app/vendor/autoload.php'; # EDIT
 

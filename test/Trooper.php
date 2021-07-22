@@ -1,6 +1,6 @@
 <?php
 
-namespace SSITU\Barnett\Test;
+namespace SSITU\Test\Barnett;
 
 use \SSITU\Barnett\Barnett;
 use \SSITU\Barnett\Assistant;
@@ -50,7 +50,7 @@ class Trooper extends Barnett
         */
 
 
-        $this->setZipSource($this->sourceDirPath)->setZipLocation($this->zipDirPath,null,true,false)->zip();
+        $this->setZipSource($this->sourceDirPath)->setZipLocation($this->zipDirPath,null,false,true)->zip();
      
     // $this->rslt['zippedFolders'] = $this->zippedFolders;
   //   $this->rslt['zippedFiles'] = $this->zippedFiles;
@@ -59,39 +59,48 @@ class Trooper extends Barnett
         $this->rslt['normalized-omit-paths'] = $omitThesePaths;
 
 
-     $folderstoDel = $this->zippedFolders;
-        $filesToDel = $this->zippedFiles;
+   //  $folderstoDel = $this->zippedFolders;
+        $filesToDel = [];
     
-            usort($filesToDel, function($a, $b){
+            usort($this->zippedFiles, function($a, $b){
                 return strlen($a) <=> strlen($b);         
              });
    
 
-        $this->rslt['sorted-zippedFiles'] = $filesToDel;
+        $this->rslt['sorted-zippedFiles'] = $this->zippedFiles;
 
-           foreach($filesToDel as $k => $file){
-               foreach($omitThesePaths as $path){
-               if(!Assistant::containsSubstr($file, $path, 0)){
-                  $todDelete[]=      
+           foreach($this->zippedFiles as $k => $file){
+            
+               if(!empty($omitThesePaths)){
+                $search = array_search($file, $omitThesePaths);
+                if($search !== false){
+                    unset($omitThesePaths[$search]);
+                    continue;
+                }
                }
+            if(!empty($filesToDel) && in_array(basename($file),$filesToDel)){
+                $filesToDel[] = $file;
+            }
            }
-        }
+        
         $this->rslt['to-delete'] = $filesToDel;
      
-
+/*
         $folderstoDel = [];
         $filesToDel = [];
         if(!empty($this->zippedFolders)){
-            $folderstoDel = $this->zippedFolders;
-            foreach($folderstoDel as $folder){
+            foreach($this->zippedFolders as $folder){
                 $search = array_search($folder, $omitThesePaths);
-                if($search === false){
-                    $folderstoDel[] = $folder;
-                } else {
+                if($search !== false){
                     unset($omitThesePaths[$search]);
                     if(empty($omitThesePaths)){
                         break;
                     }
+                }
+                if($search === false){
+                    $folderstoDel[] = $folder;
+                } else {
+                   
                 }
             }
         }
