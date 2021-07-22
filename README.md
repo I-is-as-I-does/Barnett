@@ -1,12 +1,6 @@
 # Barnett
 
-/!\ THIS IS ALPHA. TESTS ARE STILL BEING DONE. DON'T USE.
-
-**Todo**
-- [ ] Complete tests
-- [ ] Doc of protected methods
-
-___
+/!\ BETA STAGE
 
 A Php zip utility.  
 Makes your life easier.  
@@ -33,14 +27,14 @@ Set archive destination, source directory and **voilà**.
 
 * Comes with finishing moves.
   * Can delete successfully zipped source files.
-  * Provide feedback on zipped and shred files. 
+  * Provide feedback on zipped and shred files.
   * Oh, and produce an html download link.
 
 ### Call with Style
 
-- Barnett's methods can be chained.  
-- Since it extends ZipArchive, you can call native methods too.  
-- No private thingies, so you can extend it too.
+* Barnett's methods can be chained.  
+* Since it extends ZipArchive, you can call native methods too.  
+* No private thingies, so you can extend it too.
 
 ## Install
 
@@ -49,8 +43,9 @@ composer require ssitu/barnett
 ```
 
 Also require `ssitu/blueprints`:  
-- `FlexLogsTrait` and 
-- `FlexLogsInterface` specifically.  
+
+* `FlexLogsTrait` and
+* `FlexLogsInterface` specifically.  
 
 This is a Psr-3 "logger aware" implementation with a fallback.  
 If no use of other SSITU blueprints, you can download just those two files.
@@ -124,15 +119,13 @@ $Barnett->shredZippedFiles($omitThesePaths = []),
 
 About `$omitThesePaths`:
 
-- Specified paths can be relative to `$sourceDirPath`.  
+* Specified paths can be relative to `$sourceDirPath`.  
 example: `someFolder/someFile.ext`  
 instead of: `Source/Dir/Path/someFolder/someFile.ext`
 
-- To exclude a whole subfolder and its content, only the subfolder path is required.  
+* To exclude a whole subfolder and its all content, only the subfolder path is required.  
 example : `['dontTouchMe/']`  
 instead of: `['dontTouchMe/','dontTouchMe/file1.ext','dontTouchMe/file2.ext']`
-
-
 
 #### Chainable Resetters
 
