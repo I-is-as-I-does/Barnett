@@ -42,7 +42,7 @@ Set archive destination, source directory and **voilà**.
 composer require ssitu/barnett
 ```
 
-Also require `ssitu/blueprints`:  
+Will also require [SSITU/Blueprints](https://github.com/I-is-as-I-does/Blueprints)
 
 * `FlexLogsTrait` and
 * `FlexLogsInterface` specifically.  
