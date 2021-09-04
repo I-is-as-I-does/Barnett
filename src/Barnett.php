@@ -2,13 +2,13 @@
 /* This file is part of Barnett | SSITU | (c) 2021 I-is-as-I-does | MIT License */
 namespace SSITU\Barnett;
 
-use \SSITU\Blueprints;
+use \SSITU\Blueprints\Log;
 
-class Barnett extends \ZipArchive implements Blueprints\FlexLogsInterface
+class Barnett extends \ZipArchive implements Log\FlexLogsInterface
 
 {
 
-    use Blueprints\FlexLogsTrait;
+    use Log\FlexLogsTrait;
 
     protected $green;
 
